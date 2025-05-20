@@ -1,1 +1,1 @@
-# deeplife-binding-sites
+# DeepLife Hackathon Project: Prediction of Cryptic Binding Sites
