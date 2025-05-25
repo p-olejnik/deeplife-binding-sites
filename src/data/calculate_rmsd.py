@@ -261,6 +261,7 @@ def parallel_rmsd_calculation(data, n_workers=None, chunk_size=10):
             as_completed(future_to_idx),
             total=len(future_to_idx),
             desc="Calculating RMSDs",
+            ascii=True,
         ):
             try:
                 idx, rmsd, missing_holo_residues, missing_apo_residues, uniprot_id, pdb_id, error_msg = future.result()
@@ -321,7 +322,7 @@ def main():
 
     # Divide data into batches for processing
     batch_size = 10000
-    batches = [data[i:i + batch_size] for i in range(0, len(data), batch_size)]
+    batches = [data[i:i + batch_size].reset_index(drop=True) for i in range(0, len(data), batch_size)]
     print(f"Processing {len(batches)} batches of size {batch_size}...")
 
     results = []
