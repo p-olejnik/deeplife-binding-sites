@@ -173,5 +173,9 @@ cython_debug/
 # PyPI configuration file
 .pypirc
 
+# macOS cache
+.DS_Store
+
 # Structure datasets
-/data/structures
+/data/structures/alphafold/*
+/data/structures/pdb/*
