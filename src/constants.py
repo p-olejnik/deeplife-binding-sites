@@ -14,3 +14,9 @@ PDB_STRUCTURES_DIR = STRUCTURES_DIR / "pdb"
 # PDB and UniProt structure IDs
 ALPHAFOLD_STRUCTURES_IDS = STRUCTURES_DIR / "alphafold_structure_ids.txt"
 PDB_STRUCTURES_IDS = STRUCTURES_DIR / "pdb_structure_ids.txt"
+
+# CryptoBench dataset
+CRYPTOBENCH_DIR = DATA_DIR / "cryptobench"
+CRYPTOBENCH_DATASET = CRYPTOBENCH_DIR / "dataset.json"
+CRYPTOBENCH_FOLDS = CRYPTOBENCH_DIR / "folds.json"
+
