@@ -191,9 +191,11 @@ def main():
     metrics_data = metrics_data.dropna(subset=["mean_plddt", "pocket_rmsd"])
 
     # Filter cryptic pockets
-    metrics_data["is_cryptic"] = (
-        metrics_data["mean_plddt"] < args.plddt_threshold
-    ) & (metrics_data["pocket_rmsd"] > args.rmsd_threshold)
+    # metrics_data["is_cryptic"] = (
+    #     metrics_data["mean_plddt"] < args.plddt_threshold
+    # ) & (metrics_data["pocket_rmsd"] > args.rmsd_threshold)
+
+    metrics_data["is_cryptic"] = metrics_data["pocket_rmsd"] > args.rmsd_threshold
 
     cryptic_dataset, non_cryptic_dataset = create_dataset(
         metrics_data, args.ignore_missing_residues, args.verbose

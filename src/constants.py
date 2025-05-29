@@ -33,3 +33,9 @@ CRYPTOBENCH_SEQUENCES = CRYPTOBENCH_DIR / "sequences.csv"
 DATASET_DIR = DATA_DIR / "dataset"
 DATASET = DATASET_DIR / "dataset.json"
 NON_CRYPTIC_DATASET = DATASET_DIR / "non_cryptic_dataset.json"
+FILTERED_DATASET = DATASET_DIR / "dataset_filtered.json"
+
+# Annotations
+ANNOTATED_SEQUENCES = DATASET_DIR / "annotated_sequences.csv"
+FILTERED_ANNOTATED_SEQUENCES = DATASET_DIR / "annotated_sequences_filtered.csv"
+CRYPTOBENCH_ANNOTATED_SEQUENCES = CRYPTOBENCH_DIR / "annotated_sequences.csv"
