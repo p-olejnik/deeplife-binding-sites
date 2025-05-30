@@ -1,10 +1,11 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+import numpy as np
 
 
 class Full_Attention(nn.Module):
-    def __init__(self, mask_flag=False, output_attention=True, attention_dropout=0.1):
+    def __init__(self, mask_flag=False, output_attention=False, attention_dropout=0.1):
         super(Full_Attention, self).__init__()
         self.mask_flag = mask_flag
         self.output_attention = output_attention
@@ -22,7 +23,7 @@ class Full_Attention(nn.Module):
         scores = torch.einsum('bhex,bhey -> bhxy', Q, K) * scale
 
         atten= F.softmax(scores.abs(), dim=-1)
-        #atten = self.dropout(atten)
+        atten = self.dropout(atten)
         if self.mask_flag:
             mask = torch.triu(torch.ones(S, S), 1).bool().to(atten.device)
             atten = atten.masked_fill(mask, 0)
@@ -30,11 +31,12 @@ class Full_Attention(nn.Module):
         atten = torch.einsum("bhxy,bhey->bhex", atten, V)
         
         out = atten.permute(0, 3, 1, 2)       
-        
+        out=out.reshape(B,L,-1)
         if self.output_attention == False:
             return out
         else:
             return out, atten
+
             
 class Attention_Layer(nn.Module):
     def __init__(self, attention, enc_dim, heads, dropout):
@@ -56,15 +58,15 @@ class Attention_Layer(nn.Module):
 
     def forward(self, Q, K, V):
         B = Q.shape[0] #batch size
-        Q_len, K_len, V_len = Q.shape[1], K.shape[1], V.shape[1] #seq_len
+        Q_len, K_len, V_len = Q.shape[1],K.shape[1],V.shape[1] #seq_len
 
         Q=self.Q_linear(Q).view(B, Q_len, self.heads, self.head_dim)
         K=self.K_linear(K).view(B, K_len, self.heads, self.head_dim)
         V=self.V_linear(V).view(B, V_len, self.heads, self.head_dim)
 
-        out,atten = self.attention(Q, K, V)
+        out = self.attention(Q, K, V)
 
-        return self.fc_out(out),atten
+        return self.fc_out(out)
             
             
 
@@ -72,10 +74,10 @@ class FeedForward(nn.Module):
     def __init__(self, enc_dim, hidden_conv_dim, dropout = 0.1):
         super().__init__()
         self.net = nn.Sequential(
-            nn.Conv1d(enc_dim, hidden_conv_dim,kernel_size=1),
+            nn.Linear(enc_dim, hidden_conv_dim),
             nn.GELU(),
             nn.Dropout(dropout),
-            nn.Conv1d(hidden_conv_dim, enc_dim,kernel_size=1),
+            nn.Linear(hidden_conv_dim, enc_dim),
             nn.Dropout(dropout)
         )
     def forward(self, x): 
@@ -109,9 +111,12 @@ class Encoder_layer(nn.Module):
             
 
 class Transformer(nn.Module):
-    def __init__(self,enc_dim=512,heads=8,hidden_ff_dim=2048,e_layers,dropout=0.2):
-        super(Model, self).__init__()
+    def __init__(self,enc_dim=512,heads=8,hidden_ff_dim=2048,e_layers=1,dropout=0.2):
+        super(Transformer, self).__init__()
         
+        if hidden_ff_dim== None:
+            hidden_ff_dim=4*enc_dim
+            
         self.attention=Attention_Layer(Full_Attention(attention_dropout=dropout),enc_dim,heads,dropout)
         self.feedforward=FeedForward(enc_dim, hidden_ff_dim, dropout)
         #self.vocab_size=4**args.kmer
